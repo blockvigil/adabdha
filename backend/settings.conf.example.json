@@ -1,0 +1,38 @@
+{
+  "REDIS": {
+      "SENTINEL": {
+        "INSTANCES": [
+          [
+            "127.0.0.1",
+            16380
+          ],
+          [
+            "127.0.0.1",
+            16381
+          ],
+          [
+            "127.0.0.1",
+            16382
+          ]
+        ],
+        "CLUSTER_NAME": "redis-cluster"
+      },
+      "DB": 0,
+      "PASSWORD": null
+    },
+  "SES_CREDENTIALS": {
+      "from": "",
+      "region": "",
+      "accessKeyId": "",
+      "secretAccessKey": "",
+      "accountId": 0
+    },
+  "STRIPE_KEY": {
+    "DEMO": "",
+    "LIVE": ""
+  },
+  "MAIN_CONTRACT": "",
+  "EMAIL_SEND": false,
+  "CORS_ENABLED":true,
+  "GOD_MODE_APPROVAL": false
+}

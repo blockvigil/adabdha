@@ -1,0 +1,4 @@
+settings.conf.json
+.python-version
+.idea/
+__pycache__/

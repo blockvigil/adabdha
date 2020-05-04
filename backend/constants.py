@@ -1,0 +1,11 @@
+REDIS_ADABDHA_USER_VI_TOKEN = 'adabdha:verificationIntent:token:{}'  # user eth address
+REDIS_ADABDHA_VI_STATUS = 'adabdha:verificationIntent:{}:status'  # verification intent token
+REDIS_ADABDHA_VI_LIVE_MODE = 'adabdha:verificationIntent:{}:livemode'  # verification intent token
+REDIS_ADABDHA_USER_VERIFIED_IDENTITY = 'adabdha:verifiedIdentity:{}'  # user eth address
+REDIS_ADABDHA_USER_FORM_PASS_DATA = 'adabdha:passData:{}:{}'  # form uuid hash, user eth address
+REDIS_ADABDHA_USER_PASS_DATAHASH_CONFIRMED = 'adabdha:passDataConfirmed:{}'  # user eth address
+REDIS_ADABDHA_ALL_PASSES = 'adabdha:passes'
+REDIS_ADABDHA_PASS_STATUS = "adabdha:pass:{}:status"  # pass data hash
+REDIS_ADABDHA_USERS = 'adabdha:users'
+REDIS_ADABDHA_FORMS = 'adabdha:forms'
+REDIS_PENDING_ADABDHA_USER_FORMS = 'adabdha:pendingUserForms:{}'  # user eth address
