@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en" class="">
+	<head>
+		<title>Adabdha Project</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+		<link rel='icon' type='image/png' href='adabdha_logo_square.png'>
+		<meta name="twitter:card" content="summary_large_image" />
+		<meta name="twitter:site" content="@Adabdha" />
+		<meta name="twitter:title" content="Adabdha Project" />
+		<meta name="twitter:description" content="Transparent, Verifiable And Secure Access Platform" />
+		<meta name="twitter:image" content="full_workflow.png" />
+		<meta name="twitter:creator" content="@Adabdha" />
+		<meta property="og:url" content="https://adabdha.com/" />
+		<meta property="og:type" content="article" />
+		<meta property="og:title" content="Adabdha Project" />
+		<meta property="og:description" content="Transparent, Verifiable And Secure Access Platform" />
+		<meta property="og:image" content="full_workflow.png" />
+		<link rel="icon" type="image/png" sizes="32x32" href="adabdha_logo_square.png" />
+		<link rel="icon" type="image/png" sizes="16x16" href="adabdha_logo_square.png" />
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/inter-ui@3.13.1/inter.min.css">
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tailwindcss/ui@latest/dist/tailwind-ui.min.css">
+		<!-- Global site tag (gtag.js) - Google Analytics -->
+		<script async src="https://www.googletagmanager.com/gtag/js?id=UA-113891968-8"></script>
+		<script>
+			window.dataLayer = window.dataLayer || [];
+			function gtag(){dataLayer.push(arguments);}
+			gtag('js', new Date());
+
+			gtag('config', 'UA-113891968-8');
+		</script>
+
+	</head>
+
+	<body class="font-sans antialiased text-gray-900 bg-gray-900">
+		<div class="relative bg-gray-50 overflow-hidden">
+			<div class="hidden sm:block sm:absolute sm:inset-y-0 sm:h-full sm:w-full">
+				<div class="relative h-full max-w-screen-xl mx-auto">
+					<svg class="absolute right-full transform translate-y-1/4 translate-x-1/4 lg:translate-x-1/2" width="404" height="784" fill="none" viewBox="0 0 404 784">
+						<defs>
+							<pattern id="f210dbf6-a58d-4871-961e-36d5016a0f49" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+								<rect x="0" y="0" width="4" height="4" class="text-gray-200" fill="currentColor" />
+							</pattern>
+						</defs>
+						<rect width="404" height="784" fill="url(#f210dbf6-a58d-4871-961e-36d5016a0f49)" />
+					</svg>
+					<svg class="absolute left-full transform -translate-y-3/4 -translate-x-1/4 md:-translate-y-1/2 lg:-translate-x-1/2" width="404" height="784" fill="none" viewBox="0 0 404 784">
+						<defs>
+							<pattern id="5d0dd344-b041-4d26-bec4-8d33ea57ec9b" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+								<rect x="0" y="0" width="4" height="4" class="text-gray-200" fill="currentColor" />
+							</pattern>
+						</defs>
+						<rect width="404" height="784" fill="url(#5d0dd344-b041-4d26-bec4-8d33ea57ec9b)" />
+					</svg>
+				</div>
+			</div>
+
+			<div x-data="{ open: false }" class="relative pt-6 pb-12 sm:pb-16 md:pb-20 lg:pb-28 xl:pb-32">
+				<div class="max-w-screen-xl mx-auto px-4 sm:px-6">
+					<nav class="relative flex items-center justify-between sm:h-10 md:justify-center">
+						<div class="flex items-center flex-1 md:absolute md:inset-y-0 md:left-0">
+							<div class="flex items-center justify-between w-full md:w-auto">
+								<a href="/">
+									<img class="h-8 w-auto sm:h-10" src="adabdha_logo_square.png" alt="" />
+								</a>
+								<div class="-mr-2 flex items-center md:hidden">
+									<button @click="open = true" type="button" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:text-gray-500 transition duration-150 ease-in-out">
+										<svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
+											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+										</svg>
+									</button>
+								</div>
+							</div>
+						</div>
+						<div class="hidden md:block">
+							<a href="#workflow" class="font-medium text-gray-500 hover:text-gray-900 focus:outline-none focus:text-gray-900 transition duration-150 ease-in-out">Workflow</a>
+							<a href="#features" class="ml-10 font-medium text-gray-500 hover:text-gray-900 focus:outline-none focus:text-gray-900 transition duration-150 ease-in-out">Features</a>
+						</div>
+						<div class="hidden md:absolute md:flex md:items-center md:justify-end md:inset-y-0 md:right-0">
+							<span class="inline-flex rounded-md shadow">
+								<a href="https://app.adabdha.com/" target="_blank" class="inline-flex items-center px-4 py-2 border border-transparent text-base leading-6 font-medium rounded-md text-indigo-600 bg-white hover:text-indigo-500 focus:outline-none focus:shadow-outline-blue active:bg-gray-50 active:text-indigo-700 transition duration-150 ease-in-out">
+									Log in
+								</a>
+							</span>
+						</div>
+					</nav>
+				</div>
+
+				<div class="absolute top-0 inset-x-0 p-2 transition transform origin-top-right md:hidden" x-show="open" x-description="Mobile menu, show/hide based on menu open state." x-transition:enter="duration-150 ease-out" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="duration-100 ease-in" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95">
+					<div class="rounded-lg shadow-md">
+						<div class="rounded-lg bg-white shadow-xs overflow-hidden">
+							<div class="px-5 pt-4 flex items-center justify-between">
+								<div>
+									<img class="h-8 w-auto" src="adabdha_logo_square.png" alt="" />
+								</div>
+								<div class="-mr-2">
+									<button @click="open = false" type="button" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:text-gray-500 transition duration-150 ease-in-out">
+										<svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
+											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+										</svg>
+									</button>
+								</div>
+							</div>
+							<div class="px-2 pt-2 pb-3">
+								<a href="#workflow" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 focus:outline-none focus:text-gray-900 focus:bg-gray-50 transition duration-150 ease-in-out">Workflow</a>
+								<a href="#features" class="mt-1 block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 focus:outline-none focus:text-gray-900 focus:bg-gray-50 transition duration-150 ease-in-out">Features</a>
+							</div>
+							<div>
+								<a href="https://app.adabdha.com/" target="_blank" class="block w-full px-5 py-3 text-center font-medium text-indigo-600 bg-gray-50 hover:bg-gray-100 hover:text-indigo-700 focus:outline-none focus:bg-gray-100 focus:text-indigo-700 transition duration-150 ease-in-out">
+									Log in
+								</a>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="mt-10 mx-auto max-w-screen-xl px-4 sm:mt-12 sm:px-6 md:mt-16 lg:mt-20 xl:mt-28">
+					<div class="text-center">
+						<h2 class="text-4xl tracking-tight leading-10 font-extrabold text-gray-900 sm:text-5xl sm:leading-none md:text-6xl">
+							Transparent, Verifiable And
+							<br class="xl:hidden" />
+							<span class="text-indigo-600">Secure Access Platform</span>
+						</h2>
+						<p class="mt-3 max-w-md mx-auto text-base text-gray-500 sm:text-lg md:mt-5 md:text-xl md:max-w-3xl">
+							<strong>Adabdha</strong> <em>(aːdaːbdʱa:)</em> in Sanskrit means an unbroken chain that can be traced to its source. The core tenet of this project is to offer a decentralized alternative to the traditionally accepted opaque process of granting of licenses and permissions, whether in the physical or the digital world.
+						</p>
+						<div class="mt-5 max-w-md mx-auto sm:flex sm:justify-center md:mt-8">
+							<div class="rounded-md shadow">
+								<a href="https://www.notion.so/Adabdha-Project-dc221e127c6d4984b916f6352921e05a" target="_blank" class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base leading-6 font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:shadow-outline-indigo transition duration-150 ease-in-out md:py-4 md:text-lg md:px-10">
+									Read the Whitepaper
+								</a>
+							</div>
+							<div class="mt-3 rounded-md shadow sm:mt-0 sm:ml-3">
+								<a href="https://app.adabdha.com/" target="_blank" class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base leading-6 font-medium rounded-md text-indigo-600 bg-white hover:text-indigo-500 focus:outline-none focus:shadow-outline-blue transition duration-150 ease-in-out md:py-4 md:text-lg md:px-10">
+									Live demo
+								</a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+</div>
+		<div class="py-2 bg-white">
+			<div class="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
+				<div class="lg:text-center">
+					<h3 class="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl sm:leading-10">
+						<a name="workflow">
+							Proposed Workflow for Movement passes during COVID-19
+						</a>
+					</h3>
+				</div>
+				<div class="max-w-screen-xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+					<img class="w-full h-full object-cover" src="workflow.png" alt="Workflow" />
+				</div>
+			</div>
+		</div>
+		<div class="bg-gray-50 overflow-hidden">
+			<div class="relative max-w-screen-xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+				<svg class="absolute top-0 left-full transform -translate-x-1/2 -translate-y-3/4 lg:left-auto lg:right-full lg:translate-x-2/3 lg:translate-y-1/4" width="404" height="784" fill="none" viewBox="0 0 404 784">
+					<defs>
+						<pattern id="8b1b5f72-e944-4457-af67-0c6d15a99f38" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+							<rect x="0" y="0" width="4" height="4" class="text-gray-200" fill="currentColor" />
+						</pattern>
+					</defs>
+					<rect width="404" height="784" fill="url(#8b1b5f72-e944-4457-af67-0c6d15a99f38)" />
+				</svg>
+
+				<div class="relative lg:grid lg:grid-cols-3 lg:col-gap-8">
+					<div class="lg:col-span-1">
+						<h3 class="text-3xl leading-9 font-extrabold tracking-tight text-gray-900 sm:text-4xl sm:leading-10">
+							<a name="features">A system of reinforcing trust and transparency in governance.</a>
+						</h3>
+					</div>
+					<div class="mt-10 sm:grid sm:grid-cols-2 sm:col-gap-8 sm:row-gap-10 lg:col-span-2 lg:mt-0">
+						<div>
+							<div class="flex items-center justify-center h-12 w-12 rounded-md bg-indigo-500 text-white">
+								<svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+								</svg>
+							</div>
+							<div class="mt-5">
+								<h5 class="text-lg leading-6 font-medium text-gray-900">Cross border</h5>
+								<p class="mt-2 text-base leading-6 text-gray-500">
+									People from all over the world can verify their identity using our global KYC partner.
+								</p>
+							</div>
+						</div>
+						<div class="mt-10 sm:mt-0">
+							<div class="flex items-center justify-center h-12 w-12 rounded-md bg-indigo-500 text-white">
+								<svg class="h-6 w-6" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" stroke="currentColor" viewBox="0 0 24 24"><path d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
+							</div>
+							<div class="mt-5">
+								<h5 class="text-lg leading-6 font-medium text-gray-900">Secure</h5>
+								<p class="mt-2 text-base leading-6 text-gray-500">
+									Ethereum blockchain allows us to store and verify passes in a tamperproof way.
+								</p>
+							</div>
+						</div>
+						<div class="mt-10 sm:mt-0">
+							<div class="flex items-center justify-center h-12 w-12 rounded-md bg-indigo-500 text-white">
+								<svg class="h-6 w-6" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path></svg>
+							</div>
+							<div class="mt-5">
+								<h5 class="text-lg leading-6 font-medium text-gray-900">Auditable</h5>
+								<p class="mt-2 text-base leading-6 text-gray-500">
+									Every step of the process commits proofs on the chain through smart contract functions and offers a chronological, replayable trail of activity that can be independently audited.
+								</p>
+							</div>
+						</div>
+						<div class="mt-10 sm:mt-0">
+							<div class="flex items-center justify-center h-12 w-12 rounded-md bg-indigo-500 text-white">
+								<svg class="h-6 w-6" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"></path></svg>
+							</div>
+							<div class="mt-5">
+								<h5 class="text-lg leading-6 font-medium text-gray-900">Customizable</h5>
+								<p class="mt-2 text-base leading-6 text-gray-500">
+									Entities can fully customize and roll their own version thanks to the open source license.
+								</p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="">
+			<div class="max-w-screen-xl mx-auto py-12 px-4 sm:px-6 md:flex md:items-center md:justify-between lg:px-8">
+				<div class="flex justify-center md:order-2">
+					<a href="https://twitter.com/Adabdha" target="_blank" class="text-gray-400 hover:text-gray-500">
+						<span class="sr-only">Twitter</span>
+						<svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+							<path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84"/>
+						</svg>
+					</a>
+					<a href="https://github.com/blockvigil/adabdha" target="_blank" class="ml-6 text-gray-400 hover:text-gray-500">
+						<span class="sr-only">GitHub</span>
+						<svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+							<path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd"/>
+						</svg>
+					</a>
+					<a href="mailto:hello@adabdha.com" target="_blank" class="ml-6 text-gray-400 hover:text-gray-500">
+						<span class="sr-only">Email</span>
+						<svg class="flex-shrink-0 h-6 w-6 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+						</svg>
+					</a>
+					<a href="https://www.facebook.com/Adabdha" target="_blank" class="ml-6 text-gray-400 hover:text-gray-500">
+						<span class="sr-only">Facebook</span>
+						<svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+							<path fill-rule="evenodd" d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" clip-rule="evenodd"/>
+						</svg>
+					</a>
+				</div>
+				<div class="mt-8 md:mt-0 md:order-1">
+					<p class="text-center text-base leading-6 text-gray-400">
+						&copy; 2020 BlockVigil, Inc. All rights reserved.
+					</p>
+				</div>
+			</div>
+		</div>
+		<script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.3.2/dist/alpine.js" defer></script>
+	</body>
+</html>
