@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>Adabdha Proof</title>
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tailwindcss/ui@latest/dist/tailwind-ui.min.css" />
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/inter-ui@3.13.1/inter.min.css">
+		<!--Let browser know website is optimized for mobile-->
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+		<script src="https://browser.sentry-cdn.com/5.15.5/bundle.min.js" integrity="sha384-wF7Jc4ZlWVxe/L8Ji3hOIBeTgo/HwFuaeEfjGmS3EXAG7Y+7Kjjr91gJpJtr+PAT" crossorigin="anonymous">
+		</script>
+		<script>Sentry.init({ dsn: 'https://0318646c8e5e4ca9b1ca8835991ae70e@o131852.ingest.sentry.io/5216918' });</script>
+		<script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.0.1/dist/alpine.js" defer></script>
+		<script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+		<style media="screen">
+			.capitalize {
+				text-transpass: capitalize;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="bg-white overflow-hidden shadow sm:rounded-lg">
+			<div class="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+				<div class="sm:mx-auto sm:w-full sm:max-w-md">
+					<img class="mx-auto h-12 w-auto" src="adabdha_logo_square.png" alt="Adabdha Logo" />
+					<h2 class="mt-6 text-center text-3xl leading-9 font-extrabold text-gray-900">
+						Adabdha Pass Verification
+					</h2>
+				</div>
+				<div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+					<div class="max-w-3xl mx-auto space-y-4 flex flex-col items-center justify-start sm:space-y-0 sm:flex-row sm:items-end sm:justify-around">
+						<span class="inline-flex rounded-md shadow-sm">
+							<button id="scanbutton" onclick="startScan()" type="button" class="inline-flex items-center px-6 py-3 border border-transparent text-base leading-6 font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:border-indigo-700 focus:shadow-outline-indigo active:bg-indigo-700 transition ease-in-out duration-150">
+								<svg class="-ml-0.5 mr-2 h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+									<path d="M4 5a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V7a2 2 0 00-2-2h-1.586a1 1 0 01-.707-.293l-1.121-1.121A2 2 0 0011.172 3H8.828a2 2 0 00-1.414.586L6.293 4.707A1 1 0 015.586 5H4zm6 9a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd" fill-rule="evenodd"></path>
+								</svg>
+								Scan QR Code
+							</button>
+						</span>
+					</div>
+					<div class="max-w-3xl mx-auto space-y-4 flex flex-col items-center justify-start sm:space-y-0 sm:flex-row sm:items-end sm:justify-around">
+						<div id="view" style="display:none;">
+							<div id="loadingMessage">🎥 Unable to access video stream (please make sure you have a webcam enabled)</div>
+							<canvas id="canvas" hidden></canvas>
+							<div id="output" hidden>
+								<div id="outputMessage">No QR code detected.</div>
+							</div>
+						</div>
+						<div id="loadingProof" style="display:none;">⌛ Verifying proof...</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id="modal" style="display:none;" class="fixed bottom-0 inset-x-0 px-4 pb-6 sm:inset-0 sm:p-0 sm:flex sm:items-center sm:justify-center">
+			<!--
+				Background overlay, show/hide based on modal state.
+
+				Entering: "ease-out duration-300"
+					From: "opacity-0"
+					To: "opacity-100"
+				Leaving: "ease-in duration-200"
+					From: "opacity-100"
+					To: "opacity-0"
+			-->
+			<div class="fixed inset-0 transition-opacity">
+				<div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+			</div>
+
+			<!--
+				Modal panel, show/hide based on modal state.
+
+				Entering: "ease-out duration-300"
+					From: "opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+					To: "opacity-100 translate-y-0 sm:scale-100"
+				Leaving: "ease-in duration-200"
+					From: "opacity-100 translate-y-0 sm:scale-100"
+					To: "opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+			-->
+			<div class="bg-white rounded-lg px-4 pt-5 pb-4 overflow-hidden shadow-xl transform transition-all sm:max-w-sm sm:w-full sm:p-6">
+				<div>
+					<div id="etherscan" class="cursor-pointer mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
+						<svg class="h-6 w-6 text-green-600" stroke="currentColor" fill="none" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+						</svg>
+					</div>
+					<div class="mt-3 text-center sm:mt-5">
+						<div class="mt-2">
+							<div class="bg-white shadow overflow-hidden	sm:rounded-lg">
+								<div class="px-4 py-5 border-b border-gray-200 sm:px-6">
+									<h3 class="text-lg leading-6 font-medium text-gray-900">
+										Verified Pass
+									</h3>
+								</div>
+								<div class="capitalize px-4 py-5 sm:p-0">
+									<dl id="passBody"></dl>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="mt-5 sm:mt-6">
+					<span class="flex w-full rounded-md shadow-sm">
+						<button type="button" onclick="$('#modal').hide()" class="inline-flex justify-center w-full rounded-md border border-transparent px-4 py-2 bg-indigo-600 text-base leading-6 font-medium text-white shadow-sm hover:bg-indigo-500 focus:outline-none focus:border-indigo-700 focus:shadow-outline-indigo transition ease-in-out duration-150 sm:text-sm sm:leading-5">
+							Close
+						</button>
+					</span>
+				</div>
+			</div>
+		</div>
+
+		<!--JavaScript at end of body for optimized loading-->
+		<script src="./proof.js?1588433700419"></script>
+		<script src="https://cdn.jsdelivr.net/npm/jsqr@1.2.0/dist/jsQR.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/js-sha3@0.8.0/src/sha3.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/ethjs@0.4.0/dist/ethjs.min.js" integrity="sha256-embzG/SR8E/nLLJWwwvS3/zjmQe8PE76aSgKIwud6VI=" crossorigin="anonymous"></script>
+	</body>
+</html>
