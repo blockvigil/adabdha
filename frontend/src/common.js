@@ -52,7 +52,7 @@ export const checkAccount = async () => {
 			let response = await mainAPI.get('/user/'+user.ethAddress);
 			account.set(response.data);
 			initWS();
-			if (FS){
+			if (typeof(FS) != 'undefined'){
 				FS.identify(user.ethAddress, {
 					email: response.data.email
 				});
@@ -70,7 +70,7 @@ export const checkAccount = async () => {
 export const unlockAccount = () => {
 	if (instance){
 		const address = instance.getChecksumAddressString().toLowerCase();
-		if (FS){
+		if (typeof(FS) != 'undefined'){
 			FS.identify(address);
 		}
 		return address;
