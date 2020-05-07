@@ -136,7 +136,7 @@
 					<path fill-rule="evenodd" d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884zM18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" clip-rule="evenodd"/>
 				</svg>
 				</div>
-				<input type="email" name="email" bind:value={email} class="validate form-input block w-full pl-10 sm:text-sm sm:leading-5" placeholder="you@example.com" />
+				<input type="email" name="email" bind:value={email} class="validate form-input block w-full pl-10 sm:text-sm sm:leading-5" placeholder="Enter your email address" />
 			</div>
 		</div>
 		<div class="mt-6">
@@ -201,7 +201,7 @@
 										}
 									}
 								}}
-								bind:value={otp[i]} maxlength="1" class="validate form-input block w-full pl-5 sm:text-sm sm:leading-5" placeholder={i+1} />
+								bind:value={otp[i]} maxlength="1" class="validate form-input block w-full pl-5 sm:text-sm sm:leading-5" placeholder=0 />
 						</div>
 					{/each}
 				</div>
