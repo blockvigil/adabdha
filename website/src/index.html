@@ -5,7 +5,7 @@
 		<meta charset="utf-8" />
 		<meta name="description" content="The core tenet of the Adabdha Project is to offer a decentralized alternative to the traditionally accepted opaque process of granting of licenses and permissions, whether in the physical or the digital world.">
 		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-		<link rel='icon' type='image/png' href='adabdha_logo_square.png'>
+		<link rel='icon' type='image/png' href='adabdha_logo_square_small.png'>
 		<meta name="twitter:card" content="summary_large_image" />
 		<meta name="twitter:site" content="@Adabdha" />
 		<meta name="twitter:title" content="Adabdha Project" />
@@ -17,10 +17,15 @@
 		<meta property="og:title" content="Adabdha Project" />
 		<meta property="og:description" content="Transparent, Verifiable And Secure Access Platform" />
 		<meta property="og:image" content="full_workflow.png" />
-		<link rel="icon" type="image/png" sizes="32x32" href="adabdha_logo_square.png" />
-		<link rel="icon" type="image/png" sizes="16x16" href="adabdha_logo_square.png" />
-		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/inter-ui@3.13.1/inter.min.css">
-		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tailwindcss/ui@latest/dist/tailwind-ui.min.css">
+		<link rel="icon" type="image/png" sizes="32x32" href="adabdha_logo_square_small.png" />
+		<link rel="icon" type="image/png" sizes="16x16" href="adabdha_logo_square_small.png" />
+		<link rel="preload" href="https://cdn.jsdelivr.net/npm/inter-ui@3.13.1/inter.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+		<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/inter-ui@3.13.1/inter.min.css"></noscript>
+		<!--
+		<link rel="preload" href="output.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+		<noscript><link rel="stylesheet" href="output.css"></noscript>
+		-->
+		<link rel="stylesheet" href="output.css">
 		<!-- Global site tag (gtag.js) - Google Analytics -->
 		<script async src="https://www.googletagmanager.com/gtag/js?id=UA-113891968-8"></script>
 		<script>
@@ -30,7 +35,6 @@
 
 			gtag('config', 'UA-113891968-8');
 		</script>
-
 	</head>
 
 	<body class="font-sans antialiased text-gray-900 bg-gray-900">
@@ -62,7 +66,10 @@
 						<div class="flex items-center flex-1 md:absolute md:inset-y-0 md:left-0">
 							<div class="flex items-center justify-between w-full md:w-auto">
 								<a href="/">
-									<img class="h-8 w-auto sm:h-10" src="adabdha_logo_square.png" alt="" />
+									<picture>
+										<source type="image/webp" srcset="adabdha_logo_square_small.webp" />
+										<img class="w-full h-full object-cover" src="adabdha_logo_square_small.png" alt="Logo" />
+									</picture>
 								</a>
 								<div class="-mr-2 flex items-center md:hidden">
 									<button @click="open = true" type="button" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:text-gray-500 transition duration-150 ease-in-out">
@@ -92,7 +99,10 @@
 						<div class="rounded-lg bg-white shadow-xs overflow-hidden">
 							<div class="px-5 pt-4 flex items-center justify-between">
 								<div>
-									<img class="h-8 w-auto" src="adabdha_logo_square.png" alt="" />
+									<picture>
+										<source type="image/webp" srcset="adabdha_logo_square_small.webp" />
+										<img class="h-8 w-autor" src="adabdha_logo_square_small.png" alt="Logo" />
+									</picture>
 								</div>
 								<div class="-mr-2">
 									<button @click="open = false" type="button" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:text-gray-500 transition duration-150 ease-in-out">
@@ -151,7 +161,10 @@
 					</h3>
 				</div>
 				<div class="max-w-screen-xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-					<img class="w-full h-full object-cover" src="workflow.png" alt="Workflow" />
+					<picture>
+						<source type="image/webp" srcset="workflow.webp" />
+						<img class="w-full h-full object-cover" src="workflow.jpeg" alt="Workflow" />
+					</picture>
 				</div>
 			</div>
 		</div>

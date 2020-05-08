@@ -1,0 +1,15 @@
+{
+	"name": "adabdha-website",
+	"version": "0.1.1",
+	"description": "Website code for Adabdha.com",
+	"scripts": {
+		"tailwind": "tailwindcss build src/styles.css -o src/output.css",
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"author": "Swaroop Hegde",
+	"license": "GPL-3.0",
+	"dependencies": {
+		"@tailwindcss/ui": "^0.3.0",
+		"tailwindcss": "^1.4.5"
+	}
+}
