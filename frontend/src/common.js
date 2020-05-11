@@ -4,7 +4,8 @@ import { account, wsTxStore } from './stores.js';
 export const API_PREFIX = process.env.API_PREFIX;
 let wsURL = process.env.WS_URL;
 let wsKey = process.env.WS_KEY;
-export let godModeApproval = process.env.GOD_MODE_APPROVAL === true;
+export let godModeApproval = process.env.GOD_MODE_APPROVAL;
+export let hideDemoWarning = process.env.HIDE_DEMO_WARNING;
 
 export let SENTRY = process.env.SENTRY;
 export let FULLSTORY = process.env.FULLSTORY;
