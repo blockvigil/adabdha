@@ -20,11 +20,9 @@ if (!process.env.WS_KEY){
 process.env.API_PREFIX = process.env.API_PREFIX || 'http://localhost:5000';
 process.env.WS_URL = process.env.WS_URL || 'wss://beta.ethvigil.com/ws';
 process.env.WS_KEY = process.env.WS_KEY || 'unknown-key';
-process.env.GOD_MODE_APPROVAL = process.env.GOD_MODE_APPROVAL || false;
 process.env.SENTRY = process.env.SENTRY || '';
 process.env.GOOGLE_ANALYTICS = process.env.GOOGLE_ANALYTICS || '';
 process.env.FULLSTORY = process.env.FULLSTORY || '';
-process.env.SAPPER_TIMESTAMP = process.env.SAPPER_TIMESTAMP || Date.now();
 
 const onwarn = (warning, onwarn) => (warning.code === 'CIRCULAR_DEPENDENCY' && /[/\\]@sapper[/\\]/.test(warning.message)) || onwarn(warning);
 const dedupe = importee => importee === 'svelte' || importee.startsWith('svelte/');
@@ -44,7 +42,8 @@ export default {
 				'process.env.SENTRY': JSON.stringify(process.env.SENTRY),
 				'process.env.GOOGLE_ANALYTICS': JSON.stringify(process.env.GOOGLE_ANALYTICS),
 				'process.env.FULLSTORY': JSON.stringify(process.env.FULLSTORY),
-				'process.env.GOD_MODE_APPROVAL': process.env.GOD_MODE_APPROVAL,
+				'process.env.GOD_MODE_APPROVAL': process.env.GOD_MODE_APPROVAL === 'true' || false,
+				'process.env.HIDE_DEMO_WARNING': process.env.HIDE_DEMO_WARNING === 'true' || false,
 				'process.env.SAPPER_TIMESTAMP': JSON.stringify(process.env.SAPPER_TIMESTAMP),
 				'process.env.NODE_ENV': JSON.stringify(mode)
 			}),
@@ -94,7 +93,8 @@ export default {
 				'process.env.API_PREFIX': JSON.stringify(process.env.API_PREFIX),
 				'process.env.WS_URL': JSON.stringify(process.env.WS_URL),
 				'process.env.WS_KEY': JSON.stringify(process.env.WS_KEY),
-				'process.env.GOD_MODE_APPROVAL': process.env.GOD_MODE_APPROVAL,
+				'process.env.GOD_MODE_APPROVAL': process.env.GOD_MODE_APPROVAL === 'true' || false,
+				'process.env.HIDE_DEMO_WARNING': process.env.HIDE_DEMO_WARNING === 'true' || false,
 				'process.env.SENTRY': JSON.stringify(process.env.SENTRY),
 				'process.env.GOOGLE_ANALYTICS': JSON.stringify(process.env.GOOGLE_ANALYTICS),
 				'process.env.FULLSTORY': JSON.stringify(process.env.FULLSTORY),

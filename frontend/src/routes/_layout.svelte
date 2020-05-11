@@ -56,6 +56,7 @@
 							<img class="h-8 w-8" src="/adabdha_logo_square.png" alt="Adabdha logo" />
 						</a>
 					</div>
+					{#if $account}
 					<div class="hidden md:block">
 						<div class="ml-10 flex items-baseline">
 							<a href="/" class={segment == undefined || segment == '' ? openedTabClass : unopenedTabClass}>Dashboard</a>
@@ -63,6 +64,7 @@
 							<a href="/forms" class={segment == 'forms' ? openedTabClass : unopenedTabClass}>Forms</a>
 						</div>
 					</div>
+					{/if}
 				</div>
 				<div class="hidden md:block">
 					<div class="ml-4 flex items-center md:ml-6">
@@ -101,6 +103,7 @@
 					{/if}
 					</div>
 				</div>
+				{#if $account}
 				<div class="-mr-2 flex md:hidden">
 					<button	on:click={() => {mobileOpened = mobileOpened ? false : true; }} class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:bg-gray-700 focus:text-white" x-bind:aria-label="open ? 'Close main menu' : 'Main menu'" x-bind:aria-expanded="open">
 						<svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
@@ -109,9 +112,10 @@
 						</svg>
 					</button>
 				</div>
+				{/if}
 			</div>
 		</div>
-		{#if mobileOpened}
+		{#if $account && mobileOpened}
 			<div x-description="Mobile menu, toggle classes based on menu state." x-state:on="Open" x-state:off="closed" class="block">
 				<div class="px-2 pt-2 pb-3 sm:px-3">
 					<a href="/" class={segment == undefined || segment == '' ? openedMobileTabClass : unopenedMobileTabClass}>Dashboard</a>

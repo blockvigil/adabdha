@@ -1,7 +1,7 @@
 <script>
 	import { goto } from '@sapper/app';
 	import { onMount, onDestroy, tick } from 'svelte';
-	import { unlockAccount, checkAccount, mainAPI } from '../common.js';
+	import { unlockAccount, checkAccount, hideDemoWarning, mainAPI } from '../common.js';
 	import { account } from '../stores.js';
 	import KYC from '../components/KYC.svelte';
 
@@ -101,6 +101,7 @@
 
 </script>
 
+{#if !hideDemoWarning}
 <div class="rounded-md bg-blue-50 p-2">
 	<div class="flex">
 		<div class="flex-shrink-0">
@@ -110,12 +111,13 @@
 		</div>
 		<div class="ml-3 flex-1 md:flex md:justify-between">
 			<p class="text-sm leading-5 text-blue-700">
-				This is a demo hosted by BlockVigil. No forms or passes are considered valid by any authorities. If you like it, please reach out to your local govt to work with us to integrate the project.
+				This demo of <a href="https://adabdha.com" target="_blank" class="text-gray-400 hover:text-gray-500"> Adabdha</a> is hosted by BlockVigil. No forms or passes are considered valid by any authorities. Please reach out to your local govt to make this a reality! 🙏
 			</p>
 		</div>
 	</div>
 	<div> </div>
 </div>
+{/if}
 
 <div class="sm:mx-auto sm:w-full sm:max-w-md">
 	<h2 class="mt-4 text-center text-3xl leading-9 font-extrabold text-gray-900">
