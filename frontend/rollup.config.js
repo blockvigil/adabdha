@@ -23,6 +23,7 @@ process.env.WS_KEY = process.env.WS_KEY || 'unknown-key';
 process.env.SENTRY = process.env.SENTRY || '';
 process.env.GOOGLE_ANALYTICS = process.env.GOOGLE_ANALYTICS || '';
 process.env.FULLSTORY = process.env.FULLSTORY || '';
+process.env.SAPPER_TIMESTAMP = process.env.SAPPER_TIMESTAMP || Date.now();
 
 const onwarn = (warning, onwarn) => (warning.code === 'CIRCULAR_DEPENDENCY' && /[/\\]@sapper[/\\]/.test(warning.message)) || onwarn(warning);
 const dedupe = importee => importee === 'svelte' || importee.startsWith('svelte/');
