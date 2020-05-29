@@ -29,11 +29,10 @@
 			}
 		}
 		*/
-
-		const data = {"email": email, "ethAddress": await unlockAccount()};
+		ethAddress = await unlockAccount();
+		const data = {"email": email, "ethAddress": ethAddress};
 		mainAPI.post('/users/', data).then((d) => {
 			requestedOTP = true;
-			ethAddress = d.data.ethAddress;
 			console.log(d.data);
 			showButtonLoader = false;
 		}).catch((error) => {
@@ -145,14 +144,14 @@
 			<span class="block w-full rounded-md shadow-sm">
 			{#if validEmail}
 				<button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:border-indigo-700 focus:shadow-outline-indigo active:bg-indigo-700 transition duration-150 ease-in-out" on:click={requestOTP}>
-				Request OTP
+				SIGN UP
 				</button>
 			{:else}
 				<button type="submit" class="opacity-50 cursor-not-allowed w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:border-indigo-700 focus:shadow-outline-indigo active:bg-indigo-700 transition duration-150 ease-in-out">
 				{#if showButtonLoader}
-				Requesting OTP <div class="lds-ring"><div></div><div></div><div></div><div></div></div>
+				{ethAddress ? 'Requesting OTP' : 'Creating Identity'} <div class="lds-ring"><div></div><div></div><div></div><div></div></div>
 				{:else}
-				Request OTP
+				SIGN UP
 				{/if}
 				</button>
 			{/if}
