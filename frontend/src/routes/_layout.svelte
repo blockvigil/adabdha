@@ -59,8 +59,8 @@
 					{#if $account}
 					<div class="hidden md:block">
 						<div class="ml-10 flex items-baseline">
-							<a href="/" on:click={() => goto('/forms')} class={segment == undefined || segment == '' ? openedTabClass : unopenedTabClass}>Dashboard</a>
-							<a href="/passes" on:click={() => goto('/forms')} class={segment == 'passes' ? openedTabClass : unopenedTabClass}>Passes</a>
+							<a href="/" on:click={() => goto('/')} class={segment == undefined || segment == '' ? openedTabClass : unopenedTabClass}>Dashboard</a>
+							<a href="/passes" on:click={() => goto('/passes')} class={segment == 'passes' ? openedTabClass : unopenedTabClass}>Passes</a>
 							<a href="/forms" on:click={() => goto('/forms')} class={segment == 'forms' ? openedTabClass : unopenedTabClass}>Forms</a>
 						</div>
 					</div>
