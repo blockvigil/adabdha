@@ -8,7 +8,7 @@
 	export let segment;
 
 	let opened = false;
-	const openedTabClass = "px-3 py-2 rounded-md text-sm font-medium text-white bg-gray-900 focus:outline-none focus:text-white focus:bg-gray-700";
+	const openedTabClass = "ml-4 px-3 py-2 rounded-md text-sm font-medium text-white bg-gray-900 focus:outline-none focus:text-white focus:bg-gray-700";
 	const unopenedTabClass = "ml-4 px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-white hover:bg-gray-700 focus:outline-none focus:text-white focus:bg-gray-700";
 	const openedMobileTabClass = "block px-3 py-2 rounded-md text-base font-medium text-white bg-gray-900 focus:outline-none focus:text-white focus:bg-gray-700";
 	const unopenedMobileTabClass = "mt-1 block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-700 focus:outline-none focus:text-white focus:bg-gray-700";
@@ -59,9 +59,9 @@
 					{#if $account}
 					<div class="hidden md:block">
 						<div class="ml-10 flex items-baseline">
-							<a href="/" class={segment == undefined || segment == '' ? openedTabClass : unopenedTabClass}>Dashboard</a>
-							<a href="/passes" class={segment == 'passes' ? openedTabClass : unopenedTabClass}>Passes</a>
-							<a href="/forms" class={segment == 'forms' ? openedTabClass : unopenedTabClass}>Forms</a>
+							<a href="/" on:click={() => goto('/')} class={segment == undefined || segment == '' ? openedTabClass : unopenedTabClass}>Dashboard</a>
+							<a href="/passes" on:click={() => goto('/passes')} class={segment == 'passes' ? openedTabClass : unopenedTabClass}>Passes</a>
+							<a href="/forms" on:click={() => goto('/forms')} class={segment == 'forms' ? openedTabClass : unopenedTabClass}>Forms</a>
 						</div>
 					</div>
 					{/if}
@@ -86,7 +86,7 @@
 							<div x-show="close" x-transition:enter="transition ease-out duration-100" x-transition:enter-start="transform opacity-0 scale-95" x-transition:enter-end="transform opacity-100 scale-100" x-transition:leave="transition ease-in duration-75" x-transition:leave-start="transform opacity-100 scale-100" x-transition:leave-end="transform opacity-0 scale-95" class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg">
 								<div class="py-1 rounded-md bg-white shadow-xs">
 									{#if $account.isAdmin}
-									<a on:click={() => {
+									<a href="#godMode" on:click={() => {
 										let account_data = $account;
 										account_data.godMode = account_data.godMode ? false : true;
 										account.set(account_data);
@@ -95,7 +95,7 @@
 										opened = false;
 									}} class="cursor-pointer block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">{$account.godMode ? 'Leave' : 'Switch to'} God Mode</a>
 									{/if}
-									<a on:click={logout} class="cursor-pointer block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Sign out</a>
+									<a href="#logout" on:click={logout} class="cursor-pointer block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Sign out</a>
 								</div>
 							</div>
 						{/if}
@@ -118,9 +118,9 @@
 		{#if $account && mobileOpened}
 			<div x-description="Mobile menu, toggle classes based on menu state." x-state:on="Open" x-state:off="closed" class="block">
 				<div class="px-2 pt-2 pb-3 sm:px-3">
-					<a href="/" class={segment == undefined || segment == '' ? openedMobileTabClass : unopenedMobileTabClass}>Dashboard</a>
-					<a href="/passes" class={segment == 'passes' ? openedMobileTabClass : unopenedMobileTabClass}>Passes</a>
-					<a href="/forms" class={segment == 'forms' ? openedMobileTabClass : unopenedMobileTabClass}>Forms</a>
+					<a href="/" on:click={() => {mobileOpened=false; goto('/')}} class={segment == undefined || segment == '' ? openedMobileTabClass : unopenedMobileTabClass}>Dashboard</a>
+					<a href="/passes" on:click={() => {mobileOpened=false; goto('/passes')}} class={segment == 'passes' ? openedMobileTabClass : unopenedMobileTabClass}>Passes</a>
+					<a href="/forms" on:click={() => {mobileOpened=false; goto('/forms')}} class={segment == 'forms' ? openedMobileTabClass : unopenedMobileTabClass}>Forms</a>
 				</div>
 				{#if $account && $account.isAdmin}
 					<div class="pt-4 pb-3 border-t border-gray-700">
@@ -131,7 +131,7 @@
 						</div>
 						<div class="mt-3 px-2">
 							{#if $account.isAdmin}
-							<a on:click={() => {
+							<a href="#godMode" on:click={() => {
 								let account_data = $account;
 								account_data.godMode = account_data.godMode ? false : true;
 								account.set(account_data);
@@ -141,7 +141,7 @@
 							}} class="block px-3 py-2 rounded-md text-base font-medium text-gray-400 hover:text-white hover:bg gray-700 focus:outline-none focus:text-white focus:bg-gray-700">
 							{$account.godMode ? 'Leave' : 'Switch to'} God Mode</a>
 							{/if}
-							<a on:click={logout} class="mt-1 block px-3 py-2 rounded-md text-base font-medium text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:text-white focus:bg-gray-700">Sign out</a>
+							<a href="#logout" on:click={logout} class="mt-1 block px-3 py-2 rounded-md text-base font-medium text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:text-white focus:bg-gray-700">Sign out</a>
 						</div>
 					</div>
 				{/if}
