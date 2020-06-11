@@ -55,29 +55,25 @@
 		}).catch((error) => {
 			showSubmitOTPButton = true;
 			showButtonLoader = false;
-			alert("Something went wrong!");
+			alert("The OTP you entered is not valid!");
 			console.error(error);
 		});
 	}
 
 
 	$: {
-		let flag = false;
-		for (let i=0; i<6; i++){
-			if (otp[i] == ''){
-				flag = true;
+		if (!$account && !submittedOTP){
+			let otp_str = otp.join("");
+			if (otp_str.length == 6 && otp_str != '000000'){
+				showSubmitOTPButton = true;
+			} else {
 				showSubmitOTPButton = false;
-				break;
 			}
-		}
-		if (!flag){
-			showSubmitOTPButton = true;
-		}
-
-		if (/^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(email)){
-			validEmail = true;
-		} else {
-			validEmail = false;
+			if (/^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(email)){
+				validEmail = true;
+			} else {
+				validEmail = false;
+			}
 		}
 	}
 
