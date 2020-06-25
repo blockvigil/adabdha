@@ -1,25 +1,11 @@
 {
   "REDIS": {
-      "SENTINEL": {
-        "INSTANCES": [
-          [
-            "127.0.0.1",
-            16380
-          ],
-          [
-            "127.0.0.1",
-            16381
-          ],
-          [
-            "127.0.0.1",
-            16382
-          ]
-        ],
-        "CLUSTER_NAME": "redis-cluster"
-      },
+      "HOST": "localhost",
+      "PORT": 6380
       "DB": 0,
-      "PASSWORD": null
-    },
+      "PASSWORD": null,
+      "CLUSTER_MODE": false
+  },
   "SES_CREDENTIALS": {
       "from": "",
       "region": "",

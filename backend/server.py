@@ -2,7 +2,7 @@ from flask import Flask, request
 from flask_cors import CORS
 from flask_restx import Api, Resource, fields, reqparse, inputs
 from flask_login import LoginManager, current_user, login_required
-
+from redis_conn import provide_redis_conn
 import time
 import requests
 import random
@@ -26,16 +26,6 @@ with open('settings.conf.json', 'r') as f:
     settings = json.load(f)
 
 main_contract_instance = evc.generate_contract_sdk(contract_address=settings['MAIN_CONTRACT'], app_name='AdabdhaMain')
-
-REDIS_CONF = {
-    "SENTINEL": settings['REDIS']['SENTINEL']
-}
-REDIS_DB = settings['REDIS']['DB']
-REDIS_PASSWORD = settings['REDIS']['PASSWORD']
-
-sentinel = Sentinel(sentinels=REDIS_CONF['SENTINEL']['INSTANCES'], db=REDIS_DB, password=REDIS_PASSWORD,
-                    socket_timeout=0.1)
-redis_master = sentinel.master_for(REDIS_CONF['SENTINEL']['CLUSTER_NAME'])
 
 app = Flask(__name__)
 if settings['CORS_ENABLED']:
@@ -69,13 +59,14 @@ class AdabdhaUserPrototype():
         return True
 
 @login_manager.request_loader
-def load_user_from_timestamp_token(request):
+@provide_redis_conn
+def load_user_from_timestamp_token(request, redis_conn=None):
     signed_timestamp_token = request.headers.get('X-Wallet-Signature')
     ret = None
     if signed_timestamp_token:
         # 'adabdha_'+timestamp+':'+walletSign('adabdha_'+timestamp)
         recovered_eth_address = recover_address_from_sig()
-        u = redis_master.hget(REDIS_ADABDHA_USERS, recovered_eth_address)
+        u = redis_conn.hget(REDIS_ADABDHA_USERS, recovered_eth_address)
         if not u:
             ret = None
         else:
@@ -162,7 +153,7 @@ form_op_model = api.model('FormOperation', {
 
 
 user_put_parser = reqparse.RequestParser()
-user_put_parser.add_argument('otp', help='Confirm the OTP', type=int, location='json')
+user_put_parser.add_argument('otp', help='Confirm the OTP', location='json')
 
 updateops_return = api.model('UserUpdateOpsReturn', {
     'txHash': fields.String(required=True, description='transaction hash sent out'),
@@ -215,7 +206,8 @@ class AdabdhaUsers(Resource):
     @only_ethaddress_allowed
     @ns_toplevel_users.doc('create_user')
     @ns_toplevel_users.expect(user_model)
-    def post(self):
+    @provide_redis_conn
+    def post(self, redis_conn=None):
         """Initiate registration of a new user"""
         # add entry into redis, return OTP
         user_obj = api.payload
@@ -229,14 +221,14 @@ class AdabdhaUsers(Resource):
             )
             if not email_status:
                 return user_obj, 500
-        redis_master.set( eth_address + '_otp', otp, ex=900)
+        redis_conn.set( eth_address + '_otp', otp, ex=900)
         user_obj = {
             'email': api.payload['email'],
             'ethAddress': eth_address,
             'otpVerified': False,
             'kycVerified': 'unverified'
         }
-        redis_master.hset(
+        redis_conn.hset(
             REDIS_ADABDHA_USERS,
             eth_address,
             json.dumps(user_obj).encode('utf-8')
@@ -248,11 +240,12 @@ class AdabdhaUsers(Resource):
     @only_allowed_user_or_admin
     @ns_toplevel_users.doc('list_users')
     @ns_toplevel_users.marshal_list_with(user_get_return)
-    def get(self):
+    @provide_redis_conn
+    def get(self, redis_conn=None):
         """Returns all users"""
         u_l = list()
         try:
-            users_mapping = redis_master.hgetall(REDIS_ADABDHA_USERS)
+            users_mapping = redis_conn.hgetall(REDIS_ADABDHA_USERS)
         except json.JSONDecodeError:
             return [], 404
         else:
@@ -260,13 +253,13 @@ class AdabdhaUsers(Resource):
                 v = json.loads(v)
                 if 'isAdmin' not in v:
                     v['isAdmin'] = False
-                _u_v = redis_master.get(REDIS_ADABDHA_USER_VI_TOKEN.format(k.decode('utf-8')))
+                _u_v = redis_conn.get(REDIS_ADABDHA_USER_VI_TOKEN.format(k.decode('utf-8')))
                 if not _u_v:
                     # no waiting verificaion intents found
                     pass
                 else:
                     # check VI status
-                    v_s = redis_master.get(REDIS_ADABDHA_VI_STATUS.format(_u_v.decode('utf-8')))
+                    v_s = redis_conn.get(REDIS_ADABDHA_VI_STATUS.format(_u_v.decode('utf-8')))
                     if v_s and int(v_s) == -1:
                         # set kyc verified status to requested
                         v['kycVerified'] = 'requested'
@@ -282,25 +275,30 @@ class IndividualAdabdhaUserByEthAddr(Resource):
     @only_allowed_user_or_admin
     @ns_indiv_user.expect(user_put_parser)
     @ns_indiv_user.marshal_with(updateops_return, 201)
-    def put(self, ethAddress):
+    @provide_redis_conn
+    def put(self, ethAddress, redis_conn=None):
         eth_address = eth_utils.to_normalized_address(ethAddress)
         if current_user.ethAddress != eth_address:
-            return {'success': False, 'error': 'Unauthorized'}
+            return {'success': False, 'error': 'Unauthorized'}, 400
         parsed_args = user_put_parser.parse_args()
-        user_details = json.loads(redis_master.hget('adabdha:users', eth_address))
+        user_details = json.loads(redis_conn.hget('adabdha:users', eth_address))
         if parsed_args.get('otp'):
-            stored_otp = redis_master.get(eth_address + '_otp')
+            try:
+                parsed_otp = int(parsed_args.get('otp'))
+            except:
+                return {'success': False, 'error': 'BadOTP'}, 400
+            stored_otp = redis_conn.get(eth_address + '_otp')
             if not stored_otp:
                 return parsed_args, 404
             else:
                 stored_otp = int(stored_otp.decode('utf-8'))
-                if stored_otp != parsed_args['otp']:
+                if stored_otp != parsed_otp:
                     return parsed_args, 400
                 else:
                     # Set OTP verified on user details only after transaction is confirmed on contract
                     # user_details.update({'otpVerified': True})
                     #
-                    # redis_master.hset(
+                    # redis_conn.hset(
                     #     'adabdha:users',
                     #     eth_address,
                     #     json.dumps(user_details).encode('utf-8')
@@ -325,18 +323,19 @@ class IndividualAdabdhaUserByEthAddr(Resource):
 
     @ns_indiv_user.expect(user_post_parser)
     @ns_indiv_user.marshal_with(user_post_return, 201)
-    def post(self, ethAddress):
+    @provide_redis_conn
+    def post(self, ethAddress, redis_conn=None):
         parsed_args = user_post_parser.parse_args()
         eth_address = eth_utils.to_normalized_address(ethAddress)
         return_url = api.payload['return_url']
-        user_details = json.loads(redis_master.hget('adabdha:users', eth_address))
+        user_details = json.loads(redis_conn.hget('adabdha:users', eth_address))
         action = parsed_args.get('action')
         if action == 'initiateVerify' or action == 'initiateMockVerify' \
                 and user_details.get('kycVerified') not in ['verified', 'pending']:
             # check if vi token already exists and has been initiated for processing
-            existing_vi = redis_master.get(REDIS_ADABDHA_USER_VI_TOKEN.format(eth_address))
+            existing_vi = redis_conn.get(REDIS_ADABDHA_USER_VI_TOKEN.format(eth_address))
             if existing_vi \
-                and int(redis_master.get(REDIS_ADABDHA_VI_STATUS.format(existing_vi.decode('utf-8')))) == -1:
+                and int(redis_conn.get(REDIS_ADABDHA_VI_STATUS.format(existing_vi.decode('utf-8')))) == -1:
                 return {'success': False, 'error': 'VerificationInitiated'}, 400
             if action == 'initiateVerify':
                 stripe.api_key = settings['STRIPE_KEY']['LIVE']
@@ -363,17 +362,17 @@ class IndividualAdabdhaUserByEthAddr(Resource):
             print('Got stripe verification intent ID : ', verification_intent_id)
             # print(r)
             # associate intent ID with user
-            redis_master.set(
+            redis_conn.set(
                 REDIS_ADABDHA_USER_VI_TOKEN.format(eth_address),
                 verification_intent_id,
                 ex=600
             )
-            redis_master.set(
+            redis_conn.set(
                 REDIS_ADABDHA_VI_STATUS.format(verification_intent_id),
                 str(-1)
             )
 
-            redis_master.set(
+            redis_conn.set(
                 REDIS_ADABDHA_VI_LIVE_MODE.format(verification_intent_id),
                 str(int(vi_live_mode))
             )
@@ -382,21 +381,22 @@ class IndividualAdabdhaUserByEthAddr(Resource):
     @login_required
     @only_allowed_user_or_admin
     @ns_indiv_user.marshal_with(user_get_return, 200)
-    def get(self, ethAddress):
+    @provide_redis_conn
+    def get(self, ethAddress, redis_conn=None):
         ethAddress = eth_utils.to_normalized_address(ethAddress)
-        u = redis_master.hget(REDIS_ADABDHA_USERS, ethAddress)
+        u = redis_conn.hget(REDIS_ADABDHA_USERS, ethAddress)
         if not u:
             return {}, 404
         details = json.loads(u)
         if 'isAdmin' not in details:
             details['isAdmin'] = False
-        _u_v = redis_master.get(REDIS_ADABDHA_USER_VI_TOKEN.format(ethAddress))
+        _u_v = redis_conn.get(REDIS_ADABDHA_USER_VI_TOKEN.format(ethAddress))
         if not _u_v:
             # no waiting verificaion intents found
             pass
         else:
             # check VI status
-            v_s = redis_master.get(REDIS_ADABDHA_VI_STATUS.format(_u_v.decode('utf-8')))
+            v_s = redis_conn.get(REDIS_ADABDHA_VI_STATUS.format(_u_v.decode('utf-8')))
             if v_s and int(v_s) == -1:
                 # set kyc verified status to requested
                 details['kycVerified'] = 'requested'
@@ -435,13 +435,14 @@ def get_NewForm_eventlogs(event_param_name, event_param_value, evcore_obj: EVCor
 class IndividualAdabdhaUserFormByEthAddr(Resource):
     @login_required
     @only_allowed_user_or_admin
-    def get(self, ethAddress):
+    @provide_redis_conn
+    def get(self, ethAddress, redis_conn=None):
         forms = list()
         ethAddress = eth_utils.to_normalized_address(ethAddress)
         # fetch from event logs cache on EthVigil
         submitted_form_uuidhashes = get_NewForm_eventlogs('ethAddress', ethAddress, evc)
         # merge with locally stored applications
-        pending_form_uuidhashes = redis_master.zrange(
+        pending_form_uuidhashes = redis_conn.zrange(
             'adabdha:pendingUserForms:{}'.format(eth_utils.to_normalized_address(ethAddress)),
             0,
             -1,
@@ -451,7 +452,7 @@ class IndividualAdabdhaUserFormByEthAddr(Resource):
             form_uuid_hash = _[0].decode('utf-8')
             timestamp = int(_[1])
             if form_uuid_hash not in submitted_form_uuidhashes:
-                redis_form_data = redis_master.hget(
+                redis_form_data = redis_conn.hget(
                     'adabdha:forms',
                     form_uuid_hash
                 )
@@ -474,7 +475,7 @@ class IndividualAdabdhaUserFormByEthAddr(Resource):
             form_dets = submitted_form_uuidhashes[each]
             # further fetch form data JSON information from redis
             # and status information of form from contract
-            redis_form_data = redis_master.hget('adabdha:forms', form_dets['uuidHash'])
+            redis_form_data = redis_conn.hget('adabdha:forms', form_dets['uuidHash'])
             if not redis_form_data:
                 return [], 404
             redis_form_data = json.loads(redis_form_data)
@@ -496,11 +497,12 @@ class IndividualAdabdhaUserFormByEthAddr(Resource):
 class FormsResource(Resource):
     @login_required
     @only_allowed_user_or_admin
-    def get(self):
+    @provide_redis_conn
+    def get(self, redis_conn=None):
         """
         Get all forms
         """
-        all_formdata = redis_master.hgetall('adabdha:forms')
+        all_formdata = redis_conn.hgetall('adabdha:forms')
         form_uuid_hashes = list(map(lambda x: x.decode('utf-8'), all_formdata.keys()))
         new_forms_events = dict()
 
@@ -553,7 +555,8 @@ class FormsResource(Resource):
     @login_required
     @ns_forms.expect(form_data_model)
     @ns_forms.marshal_with(updateops_return, 201)
-    def post(self):
+    @provide_redis_conn
+    def post(self, redis_conn=None):
         """
         Creates a new form application
         """
@@ -562,7 +565,7 @@ class FormsResource(Resource):
         if not eth_address:
             return {}, 400
         try:
-            user_details = json.loads(redis_master.hget('adabdha:users', eth_address))
+            user_details = json.loads(redis_conn.hget('adabdha:users', eth_address))
         except json.JSONDecodeError:
             return {}, 404
         if not user_details:
@@ -578,7 +581,7 @@ class FormsResource(Resource):
         hashed_formdata = eth_utils.add_0x_prefix(hashed_formdata)
         hashed_uuid = eth_utils.add_0x_prefix(eth_utils.keccak(text=api.payload['uuid']).hex())
 
-        redis_master.hset(
+        redis_conn.hset(
             'adabdha:forms',
             hashed_uuid,
             json.dumps(_form_data, separators=(',', ':')).encode('utf-8')
@@ -596,7 +599,7 @@ class FormsResource(Resource):
             print('Exception trying to update user form data on Contract ', update_formdata_params, e)
             return {}, 400
         else:
-            redis_master.zadd(
+            redis_conn.zadd(
                 f'adabdha:pendingUserForms:{eth_address}',
                 {hashed_uuid: int(time.time())}
             )
@@ -614,13 +617,14 @@ class IndividualFormResource(Resource):
     @only_form_approval_god_mode
     @ns_form_operations.expect(form_op_model)
     @ns_form_operations.marshal_with(updateops_return, 201)
-    def post(self, uuid):
+    @provide_redis_conn
+    def post(self, uuid, redis_conn=None):
         if not (api.payload['action'] == 'approve' or api.payload['action'] == 'reject'):
             return {}, 400
         action = api.payload['action']
         hashed_uuid = eth_utils.add_0x_prefix(eth_utils.keccak(text=uuid).hex())
         form_action_params = dict(uuidHash=hashed_uuid)
-        _fd = redis_master.hget(
+        _fd = redis_conn.hget(
             REDIS_ADABDHA_FORMS,
             hashed_uuid
         )
@@ -635,7 +639,7 @@ class IndividualFormResource(Resource):
             else:
                 tx = main_contract_instance.rejectForm(**form_action_params)
                 redis_form_data.update({'status': 'pendingRejection'})
-            redis_master.hset(
+            redis_conn.hset(
                 REDIS_ADABDHA_FORMS,
                 hashed_uuid,
                 json.dumps(redis_form_data).encode('utf-8')
@@ -656,7 +660,8 @@ class IndividualFormResource(Resource):
 @ns_form_operations.route('/<string:uuid>/pass')
 class FormToPassResource(Resource):
     @login_required
-    def get(self, uuid):
+    @provide_redis_conn
+    def get(self, uuid, redis_conn=None):
         passes = list()
         hashed_uuid = eth_utils.add_0x_prefix(eth_utils.keccak(text=uuid).hex())
         generated_passes = get_generated_passes_eventlogs_by_form(hashed_uuid, main_contract_instance)
@@ -685,7 +690,7 @@ class FormToPassResource(Resource):
             form_uuid_hash = e[0]['formUUIDHash']
             ethAddress = e[0]['ethAddress']
             # pull pass data
-            _pass_data = redis_master.get(REDIS_ADABDHA_USER_FORM_PASS_DATA.format(form_uuid_hash, ethAddress))
+            _pass_data = redis_conn.get(REDIS_ADABDHA_USER_FORM_PASS_DATA.format(form_uuid_hash, ethAddress))
             if not _pass_data:
                 print(f'Could not find pass data in local cache for form UUID hash {form_uuid_hash}')
                 continue
@@ -746,7 +751,8 @@ class UserPassesResource(Resource):
     # @ns_indiv_user.marshal_list_with(user_passes_return, code=200)
     @login_required
     @only_allowed_user_or_admin
-    def get(self, ethAddress):
+    @provide_redis_conn
+    def get(self, ethAddress, redis_conn=None):
         ethAddress = eth_utils.to_normalized_address(ethAddress)
         passes_event_data = get_generated_passes_eventlogs_by_ethAddress(ethAddress, main_contract_instance)
         return_list = list()
@@ -774,7 +780,7 @@ class UserPassesResource(Resource):
             pass_hash = e[0]['passDataHash']
             form_uuid_hash = e[0]['formUUIDHash']
             # pull pass data
-            _pass_data = redis_master.get(REDIS_ADABDHA_USER_FORM_PASS_DATA.format(form_uuid_hash, ethAddress))
+            _pass_data = redis_conn.get(REDIS_ADABDHA_USER_FORM_PASS_DATA.format(form_uuid_hash, ethAddress))
             if not _pass_data:
                 print(f'Could not find pass data in local cache for form UUID hash {form_uuid_hash}')
                 continue
@@ -811,9 +817,10 @@ class IndividualPassResource(Resource):
 class PassesResource(Resource):
     @login_required
     @only_allowed_user_or_admin
-    def get(self):
+    @provide_redis_conn
+    def get(self, redis_conn=None):
         passes = list()
-        p = redis_master.hgetall(REDIS_ADABDHA_ALL_PASSES)
+        p = redis_conn.hgetall(REDIS_ADABDHA_ALL_PASSES)
         p_hashes = dict()
         for k, v in p.items():
             pass_data_hash = k.decode('utf-8')
