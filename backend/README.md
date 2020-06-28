@@ -21,38 +21,6 @@ Run the following command
 pip install git+https://github.com/blockvigil/ethvigil-python-sdk.git
 ```
 
-### Redis Sentinel setup
-
-Follow the guide at [https://seanmcgary.com/posts/how-to-build-a-fault-tolerant-redis-cluster-with-sentinel/](https://seanmcgary.com/posts/how-to-build-a-fault-tolerant-redis-cluster-with-sentinel/) to set up a local Redis high availability cluster powered by Sentinels.
-
-Pull the setup from Github: [https://github.com/seanmcgary/redis-cluster-example](https://github.com/seanmcgary/redis-cluster-example)
-
-You have to fill the appropriate host IP, port numbers and cluster name from the above setup into the settings file section as follows:
-
-```
-"REDIS": {  
-    "SENTINEL": {  
-      "INSTANCES": [  
-        [  
-          "127.0.0.1",  
-          16380  
-  ],  
-        [  
-          "127.0.0.1",  
-          16381  
-  ],  
-        [  
-          "127.0.0.1",  
-          16382  
-  ]  
-      ],  
-      "CLUSTER_NAME": "redis-cluster"  
-  },  
-    "DB": 0,  
-    "PASSWORD": null  
-  },
-  ```
-
 ### Amazon SES credentials
 
 The backend code currently uses SES credentials to send out emails. Find the following section in the settings file and fill in the neccessary details:

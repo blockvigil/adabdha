@@ -6,7 +6,6 @@ from redis_conn import provide_redis_conn
 import time
 import requests
 import random
-from redis.sentinel import Sentinel
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from functools import partial, wraps
 

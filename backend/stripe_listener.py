@@ -1,7 +1,7 @@
 import time
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from redis.sentinel import Sentinel
+from redis_conn import provide_redis_conn
 import json
 import eth_utils
 import requests
@@ -17,22 +17,13 @@ with open('settings.conf.json', 'r') as f:
 
 main_contract_instance = evc.generate_contract_sdk(contract_address=settings['MAIN_CONTRACT'], app_name='AdabdhaMain')
 
-REDIS_CONF = {
-    "SENTINEL": settings['REDIS']['SENTINEL']
-}
-REDIS_DB = settings['REDIS']['DB']
-REDIS_PASSWORD = settings['REDIS']['PASSWORD']
-
-sentinel = Sentinel(sentinels=REDIS_CONF['SENTINEL']['INSTANCES'], db=REDIS_DB, password=REDIS_PASSWORD,
-                    socket_timeout=0.1)
-redis_master = sentinel.master_for(REDIS_CONF['SENTINEL']['CLUSTER_NAME'])
-
 app = Flask(__name__)
 if settings['CORS_ENABLED']:
     CORS(app)
 
 
-def process_payload(webhook_payload):
+@provide_redis_conn
+def process_payload(webhook_payload, redis_conn=None):
     payload_type = webhook_payload['type']
 
     if 'identity.verification_intent' in payload_type:
@@ -41,7 +32,7 @@ def process_payload(webhook_payload):
             user_eth_address = eth_utils.to_normalized_address(user_eth_address)
             # check whether vi_ token set against this user
             try:
-                stored_vi = redis_master.get(REDIS_ADABDHA_USER_VI_TOKEN.format(user_eth_address)).decode('utf-8')
+                stored_vi = redis_conn.get(REDIS_ADABDHA_USER_VI_TOKEN.format(user_eth_address)).decode('utf-8')
             except:
                 # print('Did not find verification intent token against user ', user_eth_address)
                 return
@@ -49,7 +40,7 @@ def process_payload(webhook_payload):
             if stored_vi != payload_vi_token:
                 # print(f'Stored VI token {stored_vi} does not match received token {payload_vi_token}')
                 return
-            user_details = redis_master.hget(
+            user_details = redis_conn.hget(
                 REDIS_ADABDHA_USERS,
                 user_eth_address
             )
@@ -58,11 +49,11 @@ def process_payload(webhook_payload):
             if payload_type == 'identity.verification_intent.succeeded':
                 extracted_user_details = webhook_payload['data']['object']['verification_reports']['identity_document']['verification_result']['identity_document']['extracted_data']
                 extracted_user_details.update({'stripe_verification_intent': webhook_payload['data']['object']['verification_reports']['identity_document']['verification_intent']})
-                redis_master.set(
+                redis_conn.set(
                     REDIS_ADABDHA_VI_STATUS.format(payload_vi_token),
                     str(int(True))
                 )
-                redis_master.set(
+                redis_conn.set(
                     REDIS_ADABDHA_USER_VERIFIED_IDENTITY.format(user_eth_address),
                     json.dumps(extracted_user_details).encode('utf-8')
                 )
@@ -71,7 +62,7 @@ def process_payload(webhook_payload):
                 try:
                     if webhook_payload['data']['object']['last_verification_error']['type'] == 'unverified':
                         verification_status = 'failed'
-                        redis_master.set(
+                        redis_conn.set(
                             REDIS_ADABDHA_VI_STATUS.format(payload_vi_token),
                             str(int(False))
                         )
@@ -92,7 +83,7 @@ def process_payload(webhook_payload):
             elif payload_type == 'identity.verification_intent.processing':
                 print('Processing update...')
                 # check if VI status is failed or successful
-                s = redis_master.get(REDIS_ADABDHA_VI_STATUS.format(payload_vi_token))
+                s = redis_conn.get(REDIS_ADABDHA_VI_STATUS.format(payload_vi_token))
                 print(f'Got redis status for VI {payload_vi_token}: {s}')
                 if s and (int(s) == 1 or int(s) == 0):
                     return  # do nothing
@@ -103,7 +94,7 @@ def process_payload(webhook_payload):
                 else:
                     print('Found last verification error on intent processing update')
                     verification_status = 'failed'
-                    redis_master.set(
+                    redis_conn.set(
                         REDIS_ADABDHA_VI_STATUS.format(payload_vi_token),
                         str(int(False))
                     )
@@ -112,7 +103,7 @@ def process_payload(webhook_payload):
                     if verification_status != 'verified':
                         # we set verified in redis only after receiving smart contract event confirmation
                         user_details_json['kycVerified'] = verification_status
-                        redis_master.hset(
+                        redis_conn.hset(
                             REDIS_ADABDHA_USERS,
                             user_eth_address,
                             json.dumps(user_details_json).encode('utf-8')
