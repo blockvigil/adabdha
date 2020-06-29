@@ -47,7 +47,9 @@ def process_payload(webhook_payload, redis_conn=None):
             user_details_json = json.loads(user_details)
             verification_status = None
             if payload_type == 'identity.verification_intent.succeeded':
-                extracted_user_details = webhook_payload['data']['object']['verification_reports']['identity_document']['verification_result']['identity_document']['extracted_data']
+                extracted_user_details = dict()
+                extracted_user_details['document_details'] =  webhook_payload['data']['object']['verification_reports']['identity_document']['document_details']
+                extracted_user_details['person_details'] = webhook_payload['data']['object']['verification_reports']['identity_document']['person_details']
                 extracted_user_details.update({'stripe_verification_intent': webhook_payload['data']['object']['verification_reports']['identity_document']['verification_intent']})
                 redis_conn.set(
                     REDIS_ADABDHA_VI_STATUS.format(payload_vi_token),
