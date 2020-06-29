@@ -134,11 +134,13 @@ def process_payload(request_json, redis_conn=None):
                         return
                     # pass_data_json = json.loads(p)
                     base_id_data = json.loads(p)
+                    personal_details = base_id_data['person_details']
+                    id_details = base_id_data['document_details']
                     mock_data_mode = not (get_verification_intent_mode(user_eth_address))
                     stored_pass_data = {
-                        'first_name': base_id_data['first_name'],
-                        'last_name': base_id_data['last_name'],
-                        'identity_document_type': base_id_data['document_type'],
+                        'first_name': personal_details['first_name'],
+                        'last_name': personal_details['last_name'],
+                        'identity_document_type': id_details['document_type'],
                         'city': form_data_redis['city'],
                         'state': form_data_redis['state'],
                         'purpose': form_data_redis['purpose'],
@@ -216,12 +218,14 @@ def process_payload(request_json, redis_conn=None):
                 )
                 base_pass_data = get_base_id_data(user_eth_address)
                 if f and base_pass_data:
+                    personal_details = base_pass_data['person_details']
+                    id_details = base_pass_data['document_details']
                     form_data_redis = json.loads(f)
                     mock_data_mode = not(get_verification_intent_mode(user_eth_address))
                     stored_pass_data = {
-                        'first_name': base_pass_data['first_name'],
-                        'last_name': base_pass_data['last_name'],
-                        'identity_document_type': base_pass_data['document_type'],
+                        'first_name': personal_details['first_name'],
+                        'last_name': personal_details['last_name'],
+                        'identity_document_type': id_details['document_type'],
                         'city': form_data_redis['city'],
                         'state': form_data_redis['state'],
                         'purpose': form_data_redis['purpose'],
