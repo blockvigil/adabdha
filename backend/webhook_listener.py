@@ -1,7 +1,7 @@
 import time
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from redis.sentinel import Sentinel
+from redis_conn import provide_redis_conn
 import json
 import eth_utils
 from ethvigil.EVCore import EVCore
@@ -17,29 +17,19 @@ with open('settings.conf.json', 'r') as f:
 
 main_contract_instance = evc.generate_contract_sdk(contract_address=settings['MAIN_CONTRACT'], app_name='AdabdhaMain')
 
-REDIS_CONF = {
-    "SENTINEL": settings['REDIS']['SENTINEL']
-}
-REDIS_DB = settings['REDIS']['DB']
-REDIS_PASSWORD = settings['REDIS']['PASSWORD']
-
-sentinel = Sentinel(sentinels=REDIS_CONF['SENTINEL']['INSTANCES'], db=REDIS_DB, password=REDIS_PASSWORD,
-                    socket_timeout=0.1)
-redis_master = sentinel.master_for(REDIS_CONF['SENTINEL']['CLUSTER_NAME'])
-
 app = Flask(__name__)
 if settings['CORS_ENABLED']:
     CORS(app)
 
-
-def get_verification_intent_mode(user_eth_address):
+@provide_redis_conn
+def get_verification_intent_mode(user_eth_address, redis_conn=None):
     # clear stored verification intent token
-    vi_token = redis_master.get(REDIS_ADABDHA_USER_VI_TOKEN.format(user_eth_address))
+    vi_token = redis_conn.get(REDIS_ADABDHA_USER_VI_TOKEN.format(user_eth_address))
     if not vi_token:
         return None
     vi = vi_token.decode('utf-8')
     # get mode from redis
-    m = redis_master.get(REDIS_ADABDHA_VI_LIVE_MODE.format(vi))
+    m = redis_conn.get(REDIS_ADABDHA_VI_LIVE_MODE.format(vi))
     vi_mode = bool(int(m))
     return vi_mode
 
@@ -64,8 +54,9 @@ def get_approved_forms_eventlogs(track_address, evcore_obj: EVCore):
         form_uuidhashes.append(event_data['uuidHash'])
     return form_uuidhashes
 
-def get_base_id_data(user_eth_address):
-    temp_pass_data = redis_master.get(REDIS_ADABDHA_USER_VERIFIED_IDENTITY.format(user_eth_address))
+@provide_redis_conn
+def get_base_id_data(user_eth_address, redis_conn=None):
+    temp_pass_data = redis_conn.get(REDIS_ADABDHA_USER_VERIFIED_IDENTITY.format(user_eth_address))
     if not temp_pass_data:
         print(f'Could not find base identity data for user {user_eth_address}')
         return None
@@ -73,7 +64,8 @@ def get_base_id_data(user_eth_address):
         base_pass_data = json.loads(temp_pass_data)
         return base_pass_data
 
-def process_payload(request_json):
+@provide_redis_conn
+def process_payload(request_json, redis_conn=None):
     event_name = request_json.get('event_name', None)
     event_data = request_json.get('event_data', None)
     contract_address = request_json.get('contract', None)
@@ -90,7 +82,7 @@ def process_payload(request_json):
 
         form_uuid_hash = event_data['uuidHash']
         user_eth_address = eth_utils.to_normalized_address(event_data['ethAddress'])
-        u = redis_master.hget(
+        u = redis_conn.hget(
             REDIS_ADABDHA_USERS,
             user_eth_address
         )
@@ -98,20 +90,20 @@ def process_payload(request_json):
             print(f'Could not get user details for eth address {user_eth_address} connected to form')
             return
         user_details = json.loads(u)
-        form_data_redis = redis_master.hget(
+        form_data_redis = redis_conn.hget(
             REDIS_ADABDHA_FORMS,
             form_uuid_hash
         )
         if form_data_redis:
             form_data_redis = json.loads(form_data_redis)
             form_data_redis['status'] = set_status[event_name]
-            redis_master.hset(
+            redis_conn.hset(
                 REDIS_ADABDHA_FORMS,
                 form_uuid_hash,
                 json.dumps(form_data_redis, separators=(',', ':')).encode('utf-8')
             )
             if event_name == 'NewForm':
-                redis_master.zrem(
+                redis_conn.zrem(
                     'adabdha:pendingUserForms:{}'.format(user_eth_address),
                     form_uuid_hash
                 )
@@ -136,17 +128,19 @@ def process_payload(request_json):
                 # auto generate a pass if KYC details are already verified
                 if user_details['kycVerified'] == 'verified':
                     # pull pass data
-                    p = redis_master.get(REDIS_ADABDHA_USER_VERIFIED_IDENTITY.format(user_eth_address))
+                    p = redis_conn.get(REDIS_ADABDHA_USER_VERIFIED_IDENTITY.format(user_eth_address))
                     if not p:
                         print(f'Could not find pass data for user {user_eth_address}')
                         return
                     # pass_data_json = json.loads(p)
                     base_id_data = json.loads(p)
+                    personal_details = base_id_data['person_details']
+                    id_details = base_id_data['document_details']
                     mock_data_mode = not (get_verification_intent_mode(user_eth_address))
                     stored_pass_data = {
-                        'first_name': base_id_data['first_name'],
-                        'last_name': base_id_data['last_name'],
-                        'identity_document_type': base_id_data['document_type'],
+                        'first_name': personal_details['first_name'],
+                        'last_name': personal_details['last_name'],
+                        'identity_document_type': id_details['document_type'],
                         'city': form_data_redis['city'],
                         'state': form_data_redis['state'],
                         'purpose': form_data_redis['purpose'],
@@ -154,7 +148,7 @@ def process_payload(request_json):
                         'api_prefix': evc._settings["REST_API_ENDPOINT"]+'/contract/'+settings['MAIN_CONTRACT'],
                         'mock_data': mock_data_mode
                     }
-                    redis_master.set(
+                    redis_conn.set(
                         REDIS_ADABDHA_USER_FORM_PASS_DATA.format(form_uuid_hash, user_eth_address),
                         json.dumps(stored_pass_data, separators=(',', ':')).encode('utf-8')
                     )
@@ -186,7 +180,7 @@ def process_payload(request_json):
         user_eth_address = eth_utils.to_normalized_address(event_data['ethAddress'])
         user_updated_status = event_data['status']
         # get user details
-        redis_user_details = redis_master.hget(REDIS_ADABDHA_USERS, user_eth_address)
+        redis_user_details = redis_conn.hget(REDIS_ADABDHA_USERS, user_eth_address)
         if not redis_user_details:
             print(f"Could not find details in Redis for user {user_eth_address}")
             return
@@ -218,18 +212,20 @@ def process_payload(request_json):
                     print('Could not send email for KYC verification for user ' + user_eth_address)
             for form_uuid_hash in approved_forms:
                 # get the form specific pass data
-                f = redis_master.hget(
+                f = redis_conn.hget(
                     REDIS_ADABDHA_FORMS,
                     form_uuid_hash
                 )
                 base_pass_data = get_base_id_data(user_eth_address)
                 if f and base_pass_data:
+                    personal_details = base_pass_data['person_details']
+                    id_details = base_pass_data['document_details']
                     form_data_redis = json.loads(f)
                     mock_data_mode = not(get_verification_intent_mode(user_eth_address))
                     stored_pass_data = {
-                        'first_name': base_pass_data['first_name'],
-                        'last_name': base_pass_data['last_name'],
-                        'identity_document_type': base_pass_data['document_type'],
+                        'first_name': personal_details['first_name'],
+                        'last_name': personal_details['last_name'],
+                        'identity_document_type': id_details['document_type'],
                         'city': form_data_redis['city'],
                         'state': form_data_redis['state'],
                         'purpose': form_data_redis['purpose'],
@@ -252,12 +248,12 @@ def process_payload(request_json):
                     else:
                         print(
                             f'Sent out tx {tx[0]["txHash"]} for pass generation against form UUID hash {form_uuid_hash}')
-                        redis_master.set(
+                        redis_conn.set(
                             REDIS_ADABDHA_USER_FORM_PASS_DATA.format(form_uuid_hash, user_eth_address),
                             json.dumps(stored_pass_data, separators=(',', ':')).encode('utf-8')
                         )
                 time.sleep(1)
-        redis_master.hset(
+        redis_conn.hset(
             REDIS_ADABDHA_USERS,
             user_eth_address,
             json.dumps(user_details, separators=(',', ':')).encode('utf-8')
@@ -271,7 +267,7 @@ def process_payload(request_json):
 
         received_pass_data_hash = event_data['passDataHash']
         # get temporarily stored pass data
-        p = redis_master.get(REDIS_ADABDHA_USER_FORM_PASS_DATA.format(form_uuid_hash, user_eth_address))
+        p = redis_conn.get(REDIS_ADABDHA_USER_FORM_PASS_DATA.format(form_uuid_hash, user_eth_address))
         if not p:
             print(f'Could not find pass data for user {user_eth_address}')
             return
@@ -283,22 +279,22 @@ def process_payload(request_json):
             print('Local cache of pass data hash: ', stored_pass_data_hash)
             print('Received and local cache of pass data do not match. Dying...')
             return
-        redis_master.set(
+        redis_conn.set(
             REDIS_ADABDHA_USER_PASS_DATAHASH_CONFIRMED.format(user_eth_address),
             received_pass_data_hash
         )
-        redis_master.hset(
+        redis_conn.hset(
             REDIS_ADABDHA_ALL_PASSES,
             stored_pass_data_hash,
             p
         )
-        redis_master.set(
+        redis_conn.set(
             REDIS_ADABDHA_PASS_STATUS.format(stored_pass_data_hash),
             str(int(True))
         )
 
         # get user details
-        redis_user_details = redis_master.hget(REDIS_ADABDHA_USERS, user_eth_address)
+        redis_user_details = redis_conn.hget(REDIS_ADABDHA_USERS, user_eth_address)
         if not redis_user_details:
             print(f"Could not find details in Redis for user {user_eth_address}")
             return
@@ -320,11 +316,11 @@ def process_payload(request_json):
     if event_name == 'PassRevoked':
         received_pass_data_hash = event_data['passDataHash']
         # check if pass data hash exists
-        if (redis_master.hexists(REDIS_ADABDHA_ALL_PASSES, received_pass_data_hash)):
-            redis_master.set(REDIS_ADABDHA_PASS_STATUS.format(received_pass_data_hash), str(int(False)))
+        if (redis_conn.hexists(REDIS_ADABDHA_ALL_PASSES, received_pass_data_hash)):
+            redis_conn.set(REDIS_ADABDHA_PASS_STATUS.format(received_pass_data_hash), str(int(False)))
             user_eth_address = eth_utils.to_normalized_address(event_data['ethAddress'])
             # get user details
-            redis_user_details = redis_master.hget(REDIS_ADABDHA_USERS, user_eth_address)
+            redis_user_details = redis_conn.hget(REDIS_ADABDHA_USERS, user_eth_address)
             if not redis_user_details:
                 print(f"Could not find details in Redis for user {user_eth_address}")
                 return
