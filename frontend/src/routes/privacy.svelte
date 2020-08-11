@@ -14,9 +14,9 @@
 	<p class="c7 c8"><span class="c18">&nbsp;</span></p>
 	<p class="c5 c8"><span class="c1">Welcome to&nbsp;</span><span class="c6">BlockVigil, Inc.</span></p>
 	<p class="c5"><span class="c1">&nbsp;</span></p>
-	<p class="c5"><span class="c1">BlockVigil, Inc.&nbsp;(“us”, “we”, or “our”) operates&nbsp;https://tutorials.ethvigil.com&nbsp;(hereinafter referred to as “</span><span class="c6">Service</span><span class="c1">”).</span></p>
+	<p class="c5"><span class="c1">BlockVigil, Inc.&nbsp;(“us”, “we”, or “our”) operates&nbsp;https://app.adabdha.com&nbsp;(hereinafter referred to as “</span><span class="c6">Service</span><span class="c1">”).</span></p>
 	<p class="c5"><span class="c1">&nbsp;</span></p>
-	<p class="c5"><span class="c1">Our Privacy Policy governs your visit to&nbsp;https://tutorials.ethvigil.com, and explains how we collect, safeguard and disclose information that results from your use of our Service. </span></p>
+	<p class="c5"><span class="c1">Our Privacy Policy governs your visit to&nbsp;https://app.adabdha.com, and explains how we collect, safeguard and disclose information that results from your use of our Service. </span></p>
 	<p class="c5"><span class="c1">&nbsp;</span></p>
 	<p class="c5"><span class="c1">We use your data to provide and improve Service. By using Service, you agree to the collection and use of information in accordance with this policy. Unless otherwise defined in this Privacy Policy, the terms used in this Privacy Policy have the same meanings as in our Terms and Conditions.</span></p>
 	<p class="c5"><span class="c1">&nbsp;</span></p>
@@ -26,7 +26,7 @@
 		<li class="c3"><span class="c18">Definitions</span></li>
 	</ol>
 	<p class="c5 c8"><span class="c18">&nbsp;</span></p>
-	<p class="c5"><span class="c6">SERVICE&nbsp;</span><span class="c1">means the&nbsp;https://tutorials.ethvigil.com website&nbsp;operated by&nbsp;BlockVigil, Inc.</span></p>
+	<p class="c5"><span class="c6">SERVICE&nbsp;</span><span class="c1">means the&nbsp;https://app.adabdha.com website&nbsp;operated by&nbsp;BlockVigil, Inc.</span></p>
 	<p class="c25"><span class="c1">&nbsp;</span></p>
 	<p class="c5"><span class="c6">PERSONAL DATA</span><span class="c1">&nbsp;means data about a living individual who can be identified from those data (or from those and other information either in our possession or likely to come into our possession).</span></p>
 	<p class="c25"><span class="c1">&nbsp;</span></p>
